@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>LaTeX 래퍼 (Text to LaTeX)</title>
+    <style>
+        body { 
+            font-family: 'Malgun Gothic', sans-serif; 
+            padding: 20px; 
+            max-width: 800px; 
+            margin: auto; 
+        }
+        textarea { 
+            width: 100%; 
+            height: 150px; 
+            margin-bottom: 15px; 
+            padding: 10px;
+            box-sizing: border-box;
+            font-family: monospace;
+        }
+        .options { 
+            margin-bottom: 15px; 
+            padding: 10px;
+            background-color: #eef2f5;
+            border-radius: 5px;
+        }
+        .options label {
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #008f39;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #006629;
+        }
+        pre { 
+            background-color: #272822; 
+            color: #a6e22e; 
+            padding: 15px; 
+            border-radius: 5px; 
+            overflow-x: auto;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>LaTeX 텍스트 변환기</h2>
+    <p>변환할 텍스트나 수식을 입력하세요. (줄바꿈을 기준으로 나뉩니다)</p>
+    
+    <textarea id="inputText" placeholder="예시:&#10;x + y = 3&#10;2x - y = 0"></textarea>
+
+    <div class="options">
+        <label><input type="radio" name="wrapType" value="itemize" checked> Itemize (\begin{itemize})</label>
+        <label><input type="radio" name="wrapType" value="equation"> Equation (단일 수식)</label>
+        <label><input type="radio" name="wrapType" value="eqnarray"> Eqnarray (다중행 수식)</label>
+    </div>
+
+    <button onclick="convertText()">LaTeX 코드 생성하기</button>
+
+    <h3>생성된 LaTeX 결과:</h3>
+    <pre id="output">이곳에 결과가 출력됩니다.</pre>
+
+    <script>
+        function convertText() {
+            const text = document.getElementById('inputText').value;
+            // 빈 줄을 제외하고 줄바꿈을 기준으로 배열 생성
+            const lines = text.split('\n').filter(line => line.trim() !== '');
+            const wrapType = document.querySelector('input[name="wrapType"]:checked').value;
+            let resultLaTeX = '';
+
+            if (lines.length === 0) {
+                document.getElementById('output').innerText = '텍스트를 입력해주세요.';
+                return;
+            }
+
+            if (wrapType === 'itemize') {
+                // Itemize: \begin{itemize} 와 \item 으로 묶기
+                resultLaTeX = '\\begin{itemize}\n';
+                lines.forEach(line => {
+                    resultLaTeX += `    \\item ${line.trim()}\n`;
+                });
+                resultLaTeX += '\\end{itemize}';
+                
+            } else if (wrapType === 'equation') {
+                // Equation (단일): 전체 텍스트를 하나의 \begin{equation} 으로 묶기
+                resultLaTeX = '\\begin{equation}\n';
+                resultLaTeX += text + '\n';
+                resultLaTeX += '\\end{equation}';
+                
+            } else if (wrapType === 'eqnarray') {
+                // Eqnarray (다중행): \begin{eqnarray} 로 묶고 각 줄 끝에 \\ 추가 (마지막 줄 제외)
+                resultLaTeX = '\\begin{eqnarray}\n';
+                lines.forEach((line, index) => {
+                    resultLaTeX += `    ${line.trim()}`;
+                    // 마지막 줄이 아니면 줄바꿈 기호 \\ 추가
+                    if (index < lines.length - 1) {
+                        resultLaTeX += ' \\\\';
+                    }
+                    resultLaTeX += '\n';
+                });
+                resultLaTeX += '\\end{eqnarray}';
+            }
+
+            // 결과를 화면에 텍스트로 출력
+            document.getElementById('output').innerText = resultLaTeX;
+        }
+    </script>
+</body>
+</html>
