@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<style>
+    body { font-family: 'Segoe UI', sans-serif; padding: 10px; color: #333; }
+    h3 { margin-top: 0; color: #202124; border-bottom: 2px solid #4285f4; padding-bottom: 8px; }
+    
+    .container { display: flex; flex-direction: column; gap: 15px; }
+    
+    textarea {
+        width: 100%;
+        height: 150px;
+        padding: 10px;
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 13px;
+        box-sizing: border-box;
+        resize: vertical;
+    }
+
+    .options {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #e8eaed;
+    }
+
+    .checkbox-group { display: flex; flex-direction: column; gap: 5px; }
+    .input-group { display: flex; flex-direction: column; gap: 5px; }
+    
+    input[type="text"] {
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+
+    button {
+        background-color: #4285f4;
+        color: white;
+        border: none;
+        padding: 10px 0;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    button:hover { background-color: #3367d6; }
+    
+    #outputArea {
+        background-color: #2d2d2d;
+        color: #f8f8f2; /* Monokai scheme */
+        height: 200px;
+    }
+    
+    .note { font-size: 12px; color: #666; margin-top: -10px; }
+</style>
+</head>
+<body>
+
+<h3>데이터 to LaTeX 변환기</h3>
+
+<div class="container">
+    <div>
+        <label><strong>1. 데이터 붙여넣기 (엑셀, CSV 등):</strong></label>
+        <textarea id="inputData" placeholder="예:&#10;Material  Energy  Gap&#10;Si        -5.4    1.1&#10;Ge        -4.8    0.67"></textarea>
+    </div>
+
+    <div class="options">
+        <div class="checkbox-group">
+            <label><input type="checkbox" id="useBooktabs" checked> Scientific Style (booktabs)</label>
+            <label><input type="checkbox" id="escapeChars" checked> 특수문자(%, _, &) 자동 처리</label>
+            <label><input type="checkbox" id="centerTable" checked> 가운데 정렬 (\centering)</label>
+        </div>
+        <div class="input-group">
+            <input type="text" id="captionText" placeholder="캡션 (Caption, 선택사항)">
+            <input type="text" id="labelText" placeholder="라벨 (Label, 예: tab:data1)">
+        </div>
+    </div>
+
+    <button onclick="convertToLatex()">LaTeX 코드 생성하기 ▼</button>
+
+    <div>
+        <label><strong>2. 결과 (LaTeX 코드):</strong></label>
+        <textarea id="outputArea" readonly onclick="this.select()"></textarea>
+        <p class="note" id="booktabsNote" style="display:block;">* Scientific Style 사용 시 LaTeX 문서 상단에 <code>\usepackage{booktabs}</code> 가 필요합니다.</p>
+    </div>
+</div>
+
+<script>
+    function convertToLatex() {
+        const input = document.getElementById('inputData').value;
+        const useBooktabs = document.getElementById('useBooktabs').checked;
+        const escapeChars = document.getElementById('escapeChars').checked;
+        const centerTable = document.getElementById('centerTable').checked;
+        const caption = document.getElementById('captionText').value.trim();
+        const label = document.getElementById('labelText').value.trim();
+        
+        if (!input.trim()) {
+            document.getElementById('outputArea').value = "% 데이터를 입력해주세요.";
+            return;
+        }
+
+        // 1. 행 분리 (빈 줄 제거)
+        let rows = input.trim().split('\n').filter(r => r.trim() !== '');
+        
+        // 2. 구분자 감지 (탭 우선, 없으면 콤마, 없으면 공백)
+        let separator = '\t';
+        if (input.indexOf('\t') === -1) {
+            if (input.indexOf(',') > -1) separator = ',';
+            else separator = /\s+/; // 정규식: 연속된 공백
+        }
+
+        // 3. 데이터 파싱
+        let tableData = rows.map(row => {
+            let cells = row.split(separator).filter(c => c !== ''); // 공백으로 잘랐을 때 빈 셀 제거
+            
+            // 특수문자 이스케이프 처리
+            if (escapeChars) {
+                cells = cells.map(cell => 
+                    cell.trim()
+                        .replace(/\\/g, '\\textbackslash')
+                        .replace(/&/g, '\\&')
+                        .replace(/%/g, '\\%')
+                        .replace(/\$/g, '\\$')
+                        .replace(/#/g, '\\#')
+                        .replace(/_/g, '\\_')
+                        .replace(/{/g, '\\{')
+                        .replace(/}/g, '\\}')
+                        .replace(/\^/g, '\\textasciicircum')
+                        .replace(/~/g, '\\textasciitilde')
+                );
+            } else {
+                cells = cells.map(c => c.trim());
+            }
+            return cells;
+        });
+
+        // 열 개수 확인 (최대값 기준)
+        let maxCols = 0;
+        tableData.forEach(row => {
+            if (row.length > maxCols) maxCols = row.length;
+        });
+
+        // 4. LaTeX 코드 조립
+        let latex = [];
+        latex.push('\\begin{table}[hbt!]');
+        if (centerTable) latex.push('  \\centering');
+        if (caption) latex.push(`  \\caption{${caption}}`);
+        if (label) latex.push(`  \\label{${label}}`);
+        
+        // 정렬 문자열 생성 (예: ccc)
+        let alignment = 'c'.repeat(maxCols);
+        latex.push(`  \\begin{tabular}{${alignment}}`);
+        
+        // 가로줄 스타일
+        if (useBooktabs) {
+            latex.push('    \\toprule');
+        } else {
+            latex.push('    \\hline');
+        }
+
+        // 데이터 행 추가
+        tableData.forEach((row, index) => {
+            // 빈 셀 채우기 (행마다 열 개수 맞춤)
+            while (row.length < maxCols) row.push('');
+            
+            let rowStr = '    ' + row.join(' & ') + ' \\\\';
+            latex.push(rowStr);
+
+            // 첫 번째 행(헤더) 밑에 줄 긋기
+            if (index === 0) {
+                if (useBooktabs) latex.push('    \\midrule');
+                else latex.push('    \\hline');
+            }
+        });
+
+        if (useBooktabs) {
+            latex.push('    \\bottomrule');
+        } else {
+            latex.push('    \\hline');
+        }
+
+        latex.push('  \\end{tabular}');
+        latex.push('\\end{table}');
+
+        // 결과 출력
+        document.getElementById('outputArea').value = latex.join('\n');
+        
+        // 안내 문구 토글
+        document.getElementById('booktabsNote').style.display = useBooktabs ? 'block' : 'none';
+    }
+</script>
+
+</body>
+</html>
