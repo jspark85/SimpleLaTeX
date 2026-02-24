@@ -76,7 +76,7 @@
       // 3. 검사 종료 후 스택에 남은 괄호 처리 (닫히지 않은 괄호)
       while (stack.length > 0) {
         let unclosed = stack.pop();
-        errors.push(`줄 ${unclosed.line}: Opening parenthesis '<b>${unclosed.char}</b>' is not closed.`);
+        errors.push(`Line ${unclosed.line}: Opening parenthesis '<b>${unclosed.char}</b>' is not closed.`);
       }
 
       // 결과 표시
