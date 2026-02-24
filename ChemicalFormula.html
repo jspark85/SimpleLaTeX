@@ -27,12 +27,12 @@
 </head>
 <body>
 
-  <h3>LaTeX 화학식 변환기 (연속 숫자 처리)</h3>
+  <h3>LaTeX Chemical Formula Converter</h3>
   
   <div class="container">
     <textarea id="inputText" placeholder="예: SO42-, Fe(CN)63-, H2O, Mg2+"></textarea>
 
-    <button onclick="convert()">LaTeX 변환하기 ▼</button>
+    <button onclick="convert()">Convert to LaTeX</button>
 
     <div class="output-wrapper">
       <textarea id="outputText" readonly></textarea>
@@ -40,10 +40,10 @@
     </div>
     
     <div class="desc">
-      <strong>✨ 작동 원리:</strong><br>
-      1. <code>SO42-</code> 처럼 숫자가 연달아 오면: 앞 숫자(4)는 <b>아래첨자</b>, 뒤 숫자와 기호(2-)는 <b>윗첨자</b>로 바뀝니다.<br>
-      2. <code>Na+</code> 처럼 기호만 있으면 <b>윗첨자</b>로 바뀝니다.<br>
-      3. <code>H2O</code> 처럼 숫자만 있으면 <b>아래첨자</b>로 바뀝니다.
+      <strong>✨ How it works:</strong><br>
+      1. When numbers appear consecutively, like <code>SO42-</code>, the first number (4) becomes a <b>subscript</b>, and the second number and symbol (2-) become a <b>superscript</b>.
+      2. When only a symbol is present, like <code>Na+</code>, it becomes a <b>superscript</b>.
+      3. When only a number is present, like <code>H2O</code>, it becomes a <b>subscript</b>.
     </div>
   </div>
 
