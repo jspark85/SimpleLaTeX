@@ -27,13 +27,13 @@
 </head>
 <body>
 
-  <h3>LaTeX 괄호 짝 검사기</h3>
+  <h3>LaTeX parenthesis matching checker</h3>
   
   <div class="container">
-    <p style="font-size: 13px; color: #666; margin: 0;">LaTeX 코드나 화학식을 붙여넣으세요. ( ), { }, [ ]의 짝을 검사합니다.</p>
-    <textarea id="inputText" placeholder="\frac{a+b}{c  <-- 이런 실수를 찾아냅니다."></textarea>
+    <p style="font-size: 13px; color: #666; margin: 0;">Paste LaTeX code or chemical formula. Check for pairs of ( ), { }, [ ].</p>
+    <textarea id="inputText" placeholder="\frac{a+b}{c  <-- Find these mistakes."></textarea>
 
-    <button onclick="checkBrackets()">괄호 검사 시작</button>
+    <button onclick="checkBrackets()">Start parenthesis check</button>
 
     <div id="result"></div>
   </div>
@@ -62,11 +62,11 @@
           // 2. 닫는 괄호를 만난 경우
           else if (closer.includes(char)) {
             if (stack.length === 0) {
-              errors.push(`줄 ${i + 1}: 여는 괄호 없이 닫는 괄호 '<b>${char}</b>'가 먼저 나옵니다.`);
+              errors.push(`Lie ${i + 1}: Closing parenthesis without opening parenthesis'<b>${char}</b>'comes first.`);
             } else {
               let last = stack.pop();
               if (pairs[last.char] !== char) {
-                errors.push(`줄 ${i + 1}: '<b>${last.char}</b>'(줄 ${last.line})를 '<b>${char}</b>'로 잘못 닫았습니다.`);
+                errors.push(`Line ${i + 1}: '<b>${last.char}</b>'(Line ${last.line}) was incorrectly closed with '<b>${char}</b>'.`);
               }
             }
           }
@@ -76,17 +76,17 @@
       // 3. 검사 종료 후 스택에 남은 괄호 처리 (닫히지 않은 괄호)
       while (stack.length > 0) {
         let unclosed = stack.pop();
-        errors.push(`줄 ${unclosed.line}: 여는 괄호 '<b>${unclosed.char}</b>'가 닫히지 않았습니다.`);
+        errors.push(`줄 ${unclosed.line}: Opening parenthesis '<b>${unclosed.char}</b>' is not closed.`);
       }
 
       // 결과 표시
       resultDiv.style.display = 'block';
       if (errors.length === 0) {
         resultDiv.className = 'success';
-        resultDiv.innerHTML = '✅ 모든 괄호의 짝이 완벽합니다!';
+        resultDiv.innerHTML = '✅ All parentheses are perfectly matched!';
       } else {
         resultDiv.className = 'error';
-        resultDiv.innerHTML = '⚠️ <b>분석 결과:</b>\n\n' + errors.join('\n');
+        resultDiv.innerHTML = '⚠️ <b>Analysis results:</b>\n\n' + errors.join('\n');
       }
     }
   </script>
