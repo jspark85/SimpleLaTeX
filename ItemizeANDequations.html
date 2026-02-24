@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>LaTeX 래퍼 (Text to LaTeX)</title>
+    <title>LaTeX wrapper (Text to LaTeX)</title>
     <style>
         body { 
             font-family: 'Malgun Gothic', sans-serif; 
@@ -53,21 +53,21 @@
 </head>
 <body>
 
-    <h2>LaTeX 텍스트 변환기</h2>
-    <p>변환할 텍스트나 수식을 입력하세요. (줄바꿈을 기준으로 나뉩니다)</p>
+    <h2>LaTeX text converter</h2>
+    <p>Enter the text or formula you want to convert. (Line breaks will separate the text.)</p>
     
-    <textarea id="inputText" placeholder="예시:&#10;x + y = 3&#10;2x - y = 0"></textarea>
+    <textarea id="inputText" placeholder="Examples:&#10;x + y = 3&#10;2x - y = 0"></textarea>
 
     <div class="options">
         <label><input type="radio" name="wrapType" value="itemize" checked> Itemize (\begin{itemize})</label>
-        <label><input type="radio" name="wrapType" value="equation"> Equation (단일 수식)</label>
-        <label><input type="radio" name="wrapType" value="eqnarray"> Eqnarray (다중행 수식)</label>
+        <label><input type="radio" name="wrapType" value="equation"> Equation</label>
+        <label><input type="radio" name="wrapType" value="eqnarray"> Eqnarray</label>
     </div>
 
-    <button onclick="convertText()">LaTeX 코드 생성하기</button>
+    <button onclick="convertText()">Generating LaTeX code</button>
 
-    <h3>생성된 LaTeX 결과:</h3>
-    <pre id="output">이곳에 결과가 출력됩니다.</pre>
+    <h3>Generated LaTeX result:</h3>
+    <pre id="output">The results will be printed here.</pre>
 
     <script>
         function convertText() {
@@ -78,7 +78,7 @@
             let resultLaTeX = '';
 
             if (lines.length === 0) {
-                document.getElementById('output').innerText = '텍스트를 입력해주세요.';
+                document.getElementById('output').innerText = 'Please enter text.';
                 return;
             }
 
