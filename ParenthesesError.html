@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: 'Segoe UI', sans-serif; padding: 10px; color: #333; }
+  h3 { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #e74c3c; padding-bottom: 10px; }
+  .container { display: flex; flex-direction: column; gap: 15px; }
+  textarea {
+    width: 100%; height: 150px; padding: 12px; border: 1px solid #ccc;
+    border-radius: 4px; font-family: 'Courier New', monospace; font-size: 14px;
+    resize: vertical; box-sizing: border-box;
+  }
+  button {
+    background-color: #e74c3c; color: white; border: none; padding: 12px 20px;
+    border-radius: 4px; font-size: 15px; font-weight: bold; cursor: pointer;
+  }
+  button:hover { background-color: #c0392b; }
+  #result {
+    padding: 15px; border-radius: 4px; font-size: 14px; line-height: 1.6;
+    display: none; white-space: pre-wrap;
+  }
+  .error { background-color: #fce8e6; color: #c5221f; border: 1px solid #fad2cf; }
+  .success { background-color: #e6f4ea; color: #137333; border: 1px solid #ceead6; }
+  b { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+  <h3>LaTeX 괄호 짝 검사기</h3>
+  
+  <div class="container">
+    <p style="font-size: 13px; color: #666; margin: 0;">LaTeX 코드나 화학식을 붙여넣으세요. ( ), { }, [ ]의 짝을 검사합니다.</p>
+    <textarea id="inputText" placeholder="\frac{a+b}{c  <-- 이런 실수를 찾아냅니다."></textarea>
+
+    <button onclick="checkBrackets()">괄호 검사 시작</button>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function checkBrackets() {
+      const text = document.getElementById('inputText').value;
+      const resultDiv = document.getElementById('result');
+      const lines = text.split('\n');
+      
+      let stack = [];
+      let errors = [];
+      const pairs = { '(': ')', '{': '}', '[': ']' };
+      const opener = ['(', '{', '['];
+      const closer = [')', '}', ']'];
+
+      for (let i = 0; i < lines.length; i++) {
+        let line = lines[i];
+        for (let j = 0; j < line.length; j++) {
+          let char = line[j];
+
+          // 1. 여는 괄호를 만난 경우
+          if (opener.includes(char)) {
+            stack.push({ char: char, line: i + 1, pos: j + 1 });
+          } 
+          // 2. 닫는 괄호를 만난 경우
+          else if (closer.includes(char)) {
+            if (stack.length === 0) {
+              errors.push(`줄 ${i + 1}: 여는 괄호 없이 닫는 괄호 '<b>${char}</b>'가 먼저 나옵니다.`);
+            } else {
+              let last = stack.pop();
+              if (pairs[last.char] !== char) {
+                errors.push(`줄 ${i + 1}: '<b>${last.char}</b>'(줄 ${last.line})를 '<b>${char}</b>'로 잘못 닫았습니다.`);
+              }
+            }
+          }
+        }
+      }
+
+      // 3. 검사 종료 후 스택에 남은 괄호 처리 (닫히지 않은 괄호)
+      while (stack.length > 0) {
+        let unclosed = stack.pop();
+        errors.push(`줄 ${unclosed.line}: 여는 괄호 '<b>${unclosed.char}</b>'가 닫히지 않았습니다.`);
+      }
+
+      // 결과 표시
+      resultDiv.style.display = 'block';
+      if (errors.length === 0) {
+        resultDiv.className = 'success';
+        resultDiv.innerHTML = '✅ 모든 괄호의 짝이 완벽합니다!';
+      } else {
+        resultDiv.className = 'error';
+        resultDiv.innerHTML = '⚠️ <b>분석 결과:</b>\n\n' + errors.join('\n');
+      }
+    }
+  </script>
+
+</body>
+</html>
