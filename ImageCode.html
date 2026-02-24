@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LaTeX 이미지 코드 생성기</title>
+    <title>LaTeX Image Code Generator</title>
     <style>
         body {
             font-family: 'Malgun Gothic', sans-serif;
@@ -62,22 +62,22 @@
 <body>
 
 <div class="container">
-    <h2>LaTeX 이미지 코드 생성기</h2>
+    <h2>LaTeX Image Code Generator</h2>
     
     <div class="input-group">
-        <label for="size">사이즈 (예: 0.8)</label>
-        <input type="text" id="size" placeholder="숫자만 입력하면 \textwidth가 붙습니다">
+        <label for="size">Size (e.g. 0.8)</label>
+        <input type="text" id="size" placeholder="If you enter only numbers, \textwidth will be added.">
     </div>
     
     <div class="input-group">
-        <label for="filename">파일 이름 (예: figure1.png)</label>
-        <input type="text" id="filename" placeholder="파일 이름을 입력하세요">
+        <label for="filename">File name (e.g. figure1.png)</label>
+        <input type="text" id="filename" placeholder="Please enter a file name">
     </div>
     
-    <button onclick="generateLatex()">코드 생성</button>
+    <button onclick="generateLatex()">Code generation</button>
 
     <div class="result-area">
-        <label>생성된 코드:</label>
+        <label>Generated code:</label>
         <pre id="output"></pre>
     </div>
 </div>
