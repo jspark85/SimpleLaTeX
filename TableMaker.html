@@ -62,32 +62,31 @@
 </head>
 <body>
 
-<h3>데이터 to LaTeX 변환기</h3>
+<h3>Data to LaTeX converter</h3>
 
 <div class="container">
     <div>
-        <label><strong>1. 데이터 붙여넣기 (엑셀, CSV 등):</strong></label>
-        <textarea id="inputData" placeholder="예:&#10;Material  Energy  Gap&#10;Si        -5.4    1.1&#10;Ge        -4.8    0.67"></textarea>
+        <label><strong>1. Paste data:</strong></label>
+        <textarea id="inputData" placeholder="Example:&#10;Material  Energy  Gap&#10;Si        -5.4    1.1&#10;Ge        -4.8    0.67"></textarea>
     </div>
 
     <div class="options">
         <div class="checkbox-group">
             <label><input type="checkbox" id="useBooktabs" checked> Scientific Style (booktabs)</label>
-            <label><input type="checkbox" id="escapeChars" checked> 특수문자(%, _, &) 자동 처리</label>
-            <label><input type="checkbox" id="centerTable" checked> 가운데 정렬 (\centering)</label>
+            <label><input type="checkbox" id="escapeChars" checked> Automatic processing of special characters (%, _, &)</label>
+            <label><input type="checkbox" id="centerTable" checked> Center alignment (\centering)</label>
         </div>
         <div class="input-group">
-            <input type="text" id="captionText" placeholder="캡션 (Caption, 선택사항)">
-            <input type="text" id="labelText" placeholder="라벨 (Label, 예: tab:data1)">
+            <input type="text" id="captionText" placeholder="Caption, Optional)">
+            <input type="text" id="labelText" placeholder="Label, e.g. tab:data1)">
         </div>
     </div>
 
-    <button onclick="convertToLatex()">LaTeX 코드 생성하기 ▼</button>
+    <button onclick="convertToLatex()">Generating LaTeX code ▼</button>
 
     <div>
-        <label><strong>2. 결과 (LaTeX 코드):</strong></label>
+        <label><strong>2. Result (LaTeX code):</strong></label>
         <textarea id="outputArea" readonly onclick="this.select()"></textarea>
-        <p class="note" id="booktabsNote" style="display:block;">* Scientific Style 사용 시 LaTeX 문서 상단에 <code>\usepackage{booktabs}</code> 가 필요합니다.</p>
     </div>
 </div>
 
@@ -101,7 +100,7 @@
         const label = document.getElementById('labelText').value.trim();
         
         if (!input.trim()) {
-            document.getElementById('outputArea').value = "% 데이터를 입력해주세요.";
+            document.getElementById('outputArea').value = "% Please enter your data.";
             return;
         }
 
