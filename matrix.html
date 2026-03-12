@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to LaTeX Matrix with Preview</title>
+    
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            color: #333;
+        }
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            resize: vertical;
+            margin-bottom: 10px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0 20px 0;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .instruction {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #444;
+        }
+        /* Style for the rendered equation area */
+        #renderedOutput {
+            min-height: 80px;
+            padding: 20px;
+            margin-top: 10px;
+            background-color: #f8f9fa;
+            border: 1px dashed #adb5bd;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: auto;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Text-based LaTeX Matrix Generator</h2>
+    
+    <p class="instruction">
+        * Separate numbers using <strong>spaces, tabs, or commas</strong>.<br>
+        * Use line breaks (Enter) to separate rows.
+    </p>
+
+    <div class="section-title">1. Input Data</div>
+    <textarea id="inputText" placeholder="Example:&#10;1 2 3&#10;4 5 6&#10;7 8 9"></textarea>
+
+    <button onclick="convertToLatex()">Convert to LaTeX & Preview</button>
+
+    <div class="section-title">2. LaTeX Code Output</div>
+    <textarea id="outputText" placeholder="Code will appear here." readonly></textarea>
+
+    <div class="section-title">3. Equation Preview</div>
+    <div id="renderedOutput">The rendered equation will appear here.</div>
+
+    <script>
+        function convertToLatex() {
+            const rawText = document.getElementById('inputText').value.trim();
+            const outputTextArea = document.getElementById('outputText');
+            const renderedDiv = document.getElementById('renderedOutput');
+            
+            if (!rawText) {
+                outputTextArea.value = '';
+                renderedDiv.innerHTML = 'No data entered.';
+                return;
+            }
+
+            const rows = rawText.split('\n');
+            let latexRows = [];
+
+            for (let i = 0; i < rows.length; i++) {
+                let rowText = rows[i].trim();
+                if (!rowText) continue;
+
+                // Split data by spaces, tabs, or commas
+                const cols = rowText.split(/[\s,]+/);
+                latexRows.push('  ' + cols.join(' & '));
+            }
+
+            // Assemble LaTeX string
+            const latexOutput = '\\begin{bmatrix}\n' + latexRows.join(' \\\\\n') + '\n\\end{bmatrix}';
+            
+            // Output code to text area
+            outputTextArea.value = latexOutput;
+
+            // Render equation to screen using MathJax
+            // Wrap the equation in display mode ($$)
+            renderedDiv.innerHTML = '$$' + latexOutput + '$$';
+            
+            // Command MathJax to re-render the newly added equation
+            if (window.MathJax) {
+                MathJax.typesetPromise([renderedDiv]).catch(function (err) {
+                    console.error('MathJax rendering error:', err.message);
+                });
+            }
+        }
+    </script>
+
+</body>
+</html>
